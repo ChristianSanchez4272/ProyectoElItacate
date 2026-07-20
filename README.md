@@ -1,3 +1,14 @@
+<p align="center">
+  <img src="ElItacate3.jpeg" alt="El Itacate" width="250">
+</p>
+
+<h1 align="center">🌮 El Itacate</h1>
+
+<p align="center">
+Agente de Inteligencia Artificial especializado en recetas de cocina mexicana.
+</p>
+
+---
 # Chef IA — El Itacate
 
 Agente de cocina mexicana construido con LangChain y Cohere. Lee los documentos del
