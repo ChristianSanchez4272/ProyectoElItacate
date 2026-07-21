@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="El Itacate: recetas mexicanas con Chef IA.">
+    <title>El Itacate | Chef IA</title>
+    <link rel="stylesheet" href="Desafio.css">
+    <script src="Desafio.js" defer></script>
+  </head>
+  <body>
+    <main class="contenedor">
+      <header class="encabezado">
+        <p class="marca">El Itacate</p>
+        <h1>Cocinando con IA</h1>
+        <p>Recetas mexicanas sencillas, paso a paso.</p>
+      </header>
+
+      <div class="acciones" aria-label="Acciones principales">
+        <button id="btnInfo" type="button">¿Qué es El Itacate?</button>
+        <button id="btnRecetas" type="button" class="boton-principal">Empieza a cocinar</button>
+      </div>
+
+      <section id="informacion" class="tarjeta oculto" aria-live="polite">
+        <h2>El Itacate</h2>
+        <p>
+          Un espacio dedicado a la cocina mexicana, con recetas tradicionales,
+          ingredientes y consejos de cocina respaldados por Chef IA.
+        </p>
+      </section>
+
+      <section id="politicas" class="tarjeta oculto" aria-labelledby="tituloPoliticas">
+        <h2 id="tituloPoliticas">Políticas de Uso</h2>
+        <p>Lee las políticas antes de iniciar la conversación.</p>
+        <pre id="textoPoliticas" class="texto-politicas">Cargando políticas…</pre>
+        <label class="aceptacion">
+          <input id="aceptaPoliticas" type="checkbox">
+          He leído y acepto las Políticas de Uso y la Exención de Responsabilidad.
+        </label>
+        <button id="btnAceptar" type="button" disabled>Continuar con Chef IA</button>
+      </section>
+
+      <section id="chat" class="tarjeta chat oculto" aria-labelledby="tituloChat">
+        <div class="chat-cabecera">
+          <div>
+            <h2 id="tituloChat">Chef IA</h2>
+            <p>Recetas mexicanas con tus ingredientes.</p>
+          </div>
+          <button id="btnNuevaConsulta" type="button" class="boton-secundario">Nueva consulta</button>
+        </div>
+        <div id="mensajes" class="mensajes" aria-live="polite" aria-label="Conversación con Chef IA"></div>
+        <form id="formularioChat" class="formulario-chat">
+          <label class="sr-only" for="entradaChat">Escribe tu respuesta</label>
+          <input id="entradaChat" type="text" maxlength="1000" autocomplete="off" required>
+          <button id="btnEnviar" type="submit">Enviar</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
