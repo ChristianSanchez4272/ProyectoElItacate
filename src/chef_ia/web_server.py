@@ -20,8 +20,9 @@ from .service import ChefIAService, NoMatchingRecipeError, RequestValidationErro
 from .settings import CohereSettings, ConfigurationError
 
 
-PROJECT_DIRECTORY = Path(__file__).resolve().parents[2]
-DATA_DIRECTORY = PROJECT_DIRECTORY.parent
+# ``resolve`` crea rutas absolutas tanto en Windows como dentro de Render.
+APPLICATION_DIRECTORY = Path(__file__).resolve().parents[2]
+DATA_DIRECTORY = APPLICATION_DIRECTORY.parent
 MAX_REQUEST_BYTES = 8_192
 
 
@@ -217,7 +218,7 @@ class ChefIARequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(content)
 
     def log_message(self, format: str, *args: object) -> None:
-        """Mantiene un registro HTTP breve para diagnóstico en OCI."""
+        """Mantiene un registro HTTP breve para los logs de Render."""
 
         print(f"{self.address_string()} - {format % args}")
 

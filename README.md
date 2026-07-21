@@ -1,187 +1,75 @@
-<p align="center">
-  <img src="ElItacate3.jpeg" alt="El Itacate" width="250">
-</p>
+# El Itacate
 
-<h1 align="center">🌮 El Itacate</h1>
+Agente de recetas mexicanas con LangChain y Cohere. Solo recomienda recetas existentes
+en la biblioteca del proyecto y usa `Ingredientes.docx` para normalizar ingredientes y
+completar faltantes autorizados.
 
-<p align="center">
-Agente de Inteligencia Artificial especializado en recetas de cocina mexicana.
-</p>
+## Estructura de rutas
 
----
-# Chef IA — El Itacate
+La base documental permanece en la raíz del repositorio y el código está separado en
+`Agente Itacate`. En ejecución local, las rutas se resuelven automáticamente a rutas
+absolutas. En Render, el contenedor usa estas rutas absolutas:
 
-Agente de cocina mexicana construido con LangChain y Cohere. Lee los documentos del
-proyecto, recupera solo el contexto relevante y conserva reglas deterministas para no
-recomendar recetas fuera de la Biblioteca autorizada.
+```text
+/app/                         # Base documental, HTML e imagen
+/app/src/chef_ia/             # Código Python
+/app/html/                    # Vista web
+```
 
-## Arquitectura
+No se usan rutas de Windows en producción ni se requiere `--data-dir ..` al desplegar.
 
-- **LangChain** crea y ejecuta el agente.
-- **ChatCohere** genera la respuesta final a partir de una receta ya validada.
-- **KnowledgeRetriever** fragmenta el conocimiento en memoria y entrega al agente solo
-  los fragmentos relevantes. No requiere una base de datos ni envía el contenido completo
-  de los documentos como una sola consulta.
-- **ChefIAService** valida ingredientes, tipo de platillo y personas; además selecciona
-  únicamente una receta existente en la Biblioteca.
+## Ejecutar localmente
 
-La base de información se mantiene fuera de esta carpeta. El programa la recibe con
-`--data-dir ..`, que significa “la carpeta superior”.
-
-## Formatos que puede leer
-
-| Formato | Librería |
-| --- | --- |
-| Word (`.docx`) | `python-docx` |
-| PDF (`.pdf`) | `pypdf` |
-| Excel (`.xlsx`, `.xls`) | `pandas` y `openpyxl` |
-| PowerPoint (`.pptx`) | `python-pptx` |
-
-Los archivos compatibles que estén en la carpeta indicada por `--data-dir` se incorporan
-al recuperador local. Los seis documentos Word requeridos siguen siendo obligatorios.
-
-## Configuración inicial
-
-Abre PowerShell dentro de `Agente Itacate` y activa el entorno virtual:
+Desde PowerShell:
 
 ```powershell
 cd "C:\Users\Angela\Documents\Agente IA\Agente Itacate"
-.\.venv\Scripts\Activate.ps1
-$env:PYTHONPATH = "src"
-```
-
-Si PowerShell bloquea la activación, no cambies la política global: usa directamente
-`.\.venv\Scripts\python.exe` en los comandos que aparecen abajo.
-
-### Configurar la clave de Cohere
-
-1. Entra a [Cohere Dashboard](https://dashboard.cohere.com/api-keys) e inicia sesión o crea una cuenta.
-2. Genera una API key y cópiala.
-3. En PowerShell, crea tu archivo privado de configuración:
-
-```powershell
-Copy-Item .env.example .env
-notepad .env
-```
-
-4. Sustituye `pega_tu_clave_aqui` por la clave copiada y guarda el archivo.
-
-El archivo `.env` está excluido por `.gitignore`. No lo compartas ni lo subas a un repositorio.
-
-## Ejecutar
-
-Primero confirma que la base se puede leer:
-
-```powershell
-python -B -m chef_ia --data-dir .. --show-knowledge
-```
-
-Para iniciar el agente conectado a Cohere:
-
-```powershell
-python -B -m chef_ia --data-dir ..
-```
-
-Para probar el flujo sin una clave ni conexión a Cohere, usa el modo local:
-
-```powershell
-python -B -m chef_ia --data-dir .. --offline
-```
-
-## Pruebas
-
-```powershell
-python -B -m unittest discover -s tests -v
-```
-
-Si PowerShell bloqueó `Activate.ps1`, ejecuta las pruebas sin activar el entorno:
-
-```powershell
-$env:PYTHONPATH = "src"
-& ".\.venv\Scripts\python.exe" -B -m unittest discover -s tests -v
-```
-
-## Vista web local
-
-La vista usa HTML, CSS y JavaScript nativos. No incluye React, Bootstrap ni un framework
-web adicional. Desde `Agente Itacate`, inicia el servidor con:
-
-```powershell
-python -B -m chef_ia.web_server --data-dir ..
-```
-
-En equipos donde la política de PowerShell bloquee `Activate.ps1`, usa este comando
-equivalente. No necesitas cambiar la política de ejecución ni instalar pandas globalmente:
-
-```powershell
 $env:PYTHONPATH = "src"
 & ".\.venv\Scripts\python.exe" -B -m chef_ia.web_server --data-dir ..
 ```
 
-Después abre [http://localhost:8080](http://localhost:8080). La aplicación muestra las
-políticas antes de habilitar el chat. El primer ingrediente escrito es el principal: la
-vista presenta hasta tres recetas compatibles y permite elegir una antes de consultar a
-Cohere. La clave de Cohere permanece únicamente en `.env`.
+Abre `http://localhost:8080` y mantén la consola abierta mientras usas la aplicación.
 
-## OCI Container Instances
+## Configurar Cohere
 
-El proyecto incluye un `Dockerfile` en la carpeta raíz. Desde esa carpeta, crea la imagen:
-
-```powershell
-docker build -t el-itacate -f Dockerfile .
-```
-
-Para probarla localmente sin exponer la clave dentro de la imagen:
-
-```powershell
-docker run --rm -p 8080:8080 --env-file "Agente Itacate/.env" el-itacate
-```
-
-En OCI, publica la imagen en un registro autorizado y crea una Container Instance con el
-puerto `8080`, el health check HTTP en `/health` y `COHERE_API_KEY` configurada como secreto
-o variable de entorno de la instancia. No copies `.env` a la imagen ni al registro.
-
-## Estructura
+Para uso local, crea `.env` a partir de `.env.example` y agrega:
 
 ```text
-Agente Itacate/
-  .env.example          # Plantilla segura de configuración.
-  .gitignore            # Evita publicar secretos y archivos temporales.
-  requirements.txt       # Dependencias reproducibles.
-  src/chef_ia/
-    agent.py             # Agente LangChain con ChatCohere.
-    document_loader.py   # Lectores Word, PDF, Excel y PowerPoint.
-    knowledge.py         # Validación y carga de conocimiento del proyecto.
-    retriever.py         # Fragmentación y recuperación local de contexto.
-    service.py           # Reglas deterministas de selección de recetas.
-    settings.py          # Lectura segura de variables de entorno.
-  tests/                 # Pruebas automáticas.
+COHERE_API_KEY=tu_clave_privada
+```
+
+No subas el archivo `.env` al repositorio.
+
+## Desplegar en Render
+
+El repositorio incluye [render.yaml](../render.yaml) y [Dockerfile](../Dockerfile). Render
+construye la imagen automáticamente y ejecuta el servidor en `0.0.0.0` usando el puerto
+que proporciona en la variable `PORT`. El health check configurado es `/health`.
+
+1. Sube el repositorio completo a GitHub, incluyendo la carpeta `Agente Itacate`, `html`,
+   los archivos `.docx`, `Dockerfile` y `render.yaml`.
+2. En Render, selecciona **New** → **Blueprint** y conecta el repositorio.
+3. Render detectará el servicio `el-itacate` definido en `render.yaml`.
+4. En la configuración del servicio, agrega la variable secreta `COHERE_API_KEY` con la
+   clave de Cohere. No copies `.env` a Render.
+5. Crea el servicio y espera a que el estado sea **Live**. Abre la URL `https://...onrender.com`
+   que Render muestra en el panel.
+
+Render debe conservar `PORT` tal como lo asigna la plataforma. No configures `8080` ni
+`0.0.0.0` como URL del navegador: esos valores son solo para el proceso del servidor.
+
+## Pruebas
+
+```powershell
+cd "C:\Users\Angela\Documents\Agente IA\Agente Itacate"
+$env:PYTHONPATH = "src"
+& ".\.venv\Scripts\python.exe" -B -m unittest discover -s tests -v
 ```
 
 ## Normalización de ingredientes
 
-`Ingredientes.docx` es la fuente de verdad para ingredientes complementarios. Al iniciar,
-el programa crea un catálogo normalizado sin acentos y reconoce singular/plural, por
-ejemplo `huevo`/`huevos`. También interpreta `chile` como categoría de sus variedades
-documentadas (como `chile serrano`) y `queso` como categoría de quesos. También carga las
-categorías comunes del documento: proteínas, verduras, frutas, leguminosas, cereales,
-lácteos y condimentos. La categoría `carne` comprende únicamente `carne de res` y `carne de
-cerdo`, porque son las carnes explícitas del documento. Las equivalencias lingüísticas seguras
-(`tomate` → `jitomate`, `aceite vegetal` → `aceite`) están centralizadas en ese catálogo; no
-existen listas duplicadas de ingredientes dentro del servicio.
-
-## Límites funcionales
-
-Chef IA solo responde sobre recetas mexicanas sencillas de la Biblioteca. No crea recetas,
-no da dietas ni indicaciones médicas, no responde alergias, y no recomienda bebidas
-alcohólicas, postres o cocina internacional. Las recomendaciones son informativas y la
-persona usuaria conserva la responsabilidad por higiene, ingredientes y seguridad.
-
-No se clasifica la recomendación por desayuno, comida, cena o antojito: cualquier receta
-autorizada puede recomendarse en cualquier momento, siempre que cumpla las reglas de
-ingredientes.
-
-Antes de iniciar, la consola presenta las Políticas de Uso completas y requiere aceptarlas.
-El primer ingrediente proporcionado por la persona es la base obligatoria de la receta.
-Los faltantes solo pueden completarse con ingredientes o categorías definidas en
-`Ingredientes.docx`; el agente no usa otros extras ni crea recetas nuevas.
+`Ingredientes.docx` es la fuente de verdad. El catálogo normaliza mayúsculas, acentos,
+singular/plural, variantes de chile y queso, además de las categorías comunes del documento.
+Por ejemplo, `carne` puede representar `carne de res` o `carne de cerdo`, y `verduras`
+puede representar ingredientes como jitomate o papa. No se agregan ingredientes externos
+al documento.

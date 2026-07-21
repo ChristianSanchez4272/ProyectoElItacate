@@ -45,7 +45,7 @@ class WebServerTests(unittest.TestCase):
         cls.thread.join(timeout=2)
 
     def test_health_endpoint(self) -> None:
-        """El endpoint de estado permite a OCI comprobar que la aplicación vive."""
+        """El endpoint de estado permite a Render comprobar que la aplicación vive."""
 
         with urlopen(f"{self.base_url}/health") as response:
             self.assertEqual(200, response.status)
