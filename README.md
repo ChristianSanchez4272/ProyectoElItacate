@@ -73,3 +73,9 @@ singular/plural, variantes de chile y queso, además de las categorías comunes 
 Por ejemplo, `carne` puede representar `carne de res` o `carne de cerdo`, y `verduras`
 puede representar ingredientes como jitomate o papa. No se agregan ingredientes externos
 al documento.
+
+## Enlace a mi proyecto
+
+https://proyectoelitacate.onrender.com/
+
+<img width="1168" height="701" alt="image" src="https://github.com/user-attachments/assets/edbfcffa-8658-4b6d-83c5-0be093f12728" />
